@@ -1,36 +1,50 @@
-import { View, Text } from 'react-native'
-import { React, useState } from 'react'
-import { GoogleMap, APIProvider, Map, AdvancedMarker, Pin, InfoWindow, LoadScript } from '@vis.gl/react-google-maps'
+
+import React from 'react'
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 import Config from 'react-native-config';
 
-
-const googleAPIKey = Config.GOOGLE_MAPS_API_KEY;
-const position = { lat : 34.41326781821096, lng : -119.8556770115944 };
-
 const containerStyle = {
-    width: '100%', // Adjust the width as needed
-    height: '400px' // Adjust the height as needed
-  };
+  width: '400px',
+  height: '400px'
+};
 
-const MyMapComponent = () => {
-    return (
-      <LoadScript
-        googleMapsApiKey= {googleAPIKey} // Replace with your API key
+const center = {
+  lat: -3.745,
+  lng: -38.523
+};
+
+function MyComponent() {
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: Config.GOOGLE_MAPS_API_KEY
+  })
+
+  const [map, setMap] = React.useState(null)
+
+  const onLoad = React.useCallback(function callback(map) {
+    // This is just an example of getting and using the map instance!!! don't just blindly copy!
+    const bounds = new window.google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
+
+    setMap(map)
+  }, [])
+
+  const onUnmount = React.useCallback(function callback(map) {
+    setMap(null)
+  }, [])
+
+  return isLoaded ? (
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={center}
+        zoom={10}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
       >
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={position}
-          zoom={10}
-          mapId="554d8ebda2a80779" // Replace with your custom map ID
-        >
-            <AdvancedMarker position = {position}>
-                <Pin background={"red"} 
-                    borderColor={"black"} 
-                    glyphColor={"white"}/>
-                </AdvancedMarker>
-        </GoogleMap>
-      </LoadScript>
-    );
-  };
+        { /* Child components, such as markers, info windows, etc. */ }
+        <></>
+      </GoogleMap>
+  ) : <></>
+}
 
-export default MyMapComponent;
+export default React.memo(MyComponent)
