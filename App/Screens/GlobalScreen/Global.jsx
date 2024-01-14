@@ -362,10 +362,10 @@ export default function GlobalPage() {
     const renderStars = (rating) => {
         let stars = '';
         for (let i = 0; i < rating; i++) {
-          stars += '★';
+            stars += '★';
         }
         return stars;
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -383,11 +383,10 @@ export default function GlobalPage() {
                         description={`Rating: ${post.rating}`}
                         onPress={() => onMarkerPress(post)}
                     >
-                        <Image source={require('../../../assets/images/qpin.png')} style={{ height: 35, width: 35 }} />
+                        <Image source={require('../../../assets/images/qpin.png')} style={{ height: 42, width: 42 }} />
                         <Callout>
                             <View style={stylesc.calloutView}>
                                 <Text style={styles.title}>{post.eventTitle}</Text>
-                                {/* <Image source={{ uri: imageUrl }} style={styles.image} /> */}
                                 <Text style={styles.rating}>{renderStars(post.rating)}</Text>
                             </View>
                         </Callout>
@@ -404,24 +403,22 @@ const stylesc = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10, // Increased padding
-        width: 200, // Specify a width
-        height: 200, // Specify a height
+        width: 100, // Specify a width
+        height: 50, // Specify a height
         backgroundColor: 'white', // Optional: for better visibility
-        borderRadius: 6, // Optional: for rounded corners
-        borderWidth: 1, // Optional: for border
-        borderColor: '#ccc', // Optional: border color
+        borderRadius: 10, // Optional: for rounded corners
     },
     title: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
     image: {
-      width: 100,
-      height: 100,
-      marginBottom: 5,
+        width: 100,
+        height: 100,
+        marginBottom: 20,
     },
-  });
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -484,4 +481,3 @@ function getRegionForCoordinates(points, zoomFactor) {
         longitudeDelta: deltaY
     };
 }
-
