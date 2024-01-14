@@ -2,17 +2,16 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Friends from '../Screens/FriendScreen/Friends';
 import Global from '../Screens/GlobalScreen/Global';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
+import CustomTabBar from '../components/CustomTabBar'; // Import the custom tab bar component
 
 const Tab = createMaterialTopTabNavigator();
 
 function MainTabNavigator() {
     return (
       <Tab.Navigator
+        tabBar={(props) => <CustomTabBar {...props} />} // Use the custom tab bar
         screenOptions={{
           tabBarStyle: { 
-              paddingTop: hp('10%'), 
               backgroundColor: 'black', // Set the background color to black
           },
           tabBarLabelStyle: {

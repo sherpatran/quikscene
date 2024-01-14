@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image } from 'react-native';
-import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import PostComponent from '../../components/PostComponent';
 
 
@@ -9,7 +9,7 @@ const Friends = ({ navigation }) => {
 
     useEffect(() => {
         const db = getFirestore();
-        const q = query(collection(db, "posts"));
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const postsArray = [];
@@ -34,7 +34,7 @@ const Friends = ({ navigation }) => {
                 style={styles.postButton} 
                 onPress={() => navigation.navigate('Camera')}
             >
-                <Text style={styles.buttonText}>Post</Text>
+                <Text style={styles.buttonText}>Make a Scene!</Text>
             </TouchableOpacity>
         </View>
     );

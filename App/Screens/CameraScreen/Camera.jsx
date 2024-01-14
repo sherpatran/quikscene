@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Alert, Dimensions } from 'react-native';
 import { Camera } from 'expo-camera';
+
+const { width: screenWidth } = Dimensions.get('window');
+const aspectRatio = 1.1; // 110% of the screen width
 
 const CameraScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -31,13 +34,15 @@ const CameraScreen = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
-      <Camera style={styles.preview} type={Camera.Constants.Type.back} ref={cameraRef}>
-        <View style={styles.captureContainer}>
-          <TouchableOpacity onPress={takePicture} style={styles.capture}>
-            <Text style={styles.captureText}>SNAP</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
+      <View style={styles.cameraWrapper}>
+        <Camera style={styles.preview} type={Camera.Constants.Type.back} ref={cameraRef}>
+          <View style={styles.captureContainer}>
+            <TouchableOpacity onPress={takePicture} style={styles.capture}>
+              <Text style={styles.captureText}>SNAP</Text>
+            </TouchableOpacity>
+          </View>
+        </Camera>
+      </View>
     </View>
   );
 };
@@ -47,6 +52,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraWrapper: {
+    width: '100%', // Full screen width
+    aspectRatio: aspectRatio,
+    overflow: 'hidden', // This will crop the camera preview
   },
   preview: {
     flex: 1,

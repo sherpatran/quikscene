@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Image, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { Rating } from 'react-native-ratings';
 import * as Location from 'expo-location';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 const PostScreen = ({ route, navigation }) => {
   const { photo } = route.params;
@@ -27,6 +29,14 @@ const PostScreen = ({ route, navigation }) => {
     })();
   }, []);
 
+  const handleRetakePhoto = () => {
+    navigation.goBack(); // Assuming the camera screen is the previous screen
+  };
+
+  const handleCancelPost = () => {
+    navigation.navigate('Friends'); // Navigate to the Friends screen
+  };
+
   const handleSubmit = async () => {
     const storage = getStorage();
     const photoRef = ref(storage, `photos/${Date.now()}`);
@@ -38,6 +48,11 @@ const PostScreen = ({ route, navigation }) => {
   
     if (!currentUser) {
       Alert.alert("Error", "You must be logged in to post");
+      return;
+    }
+      // Check if location is not available
+    if (!location || isNaN(location.latitude) || isNaN(location.longitude)) {
+      Alert.alert("Error", "Location is required to post");
       return;
     }
   
@@ -86,58 +101,85 @@ const PostScreen = ({ route, navigation }) => {
     };
   
 
-  return (
-    <View style={styles.container}>
-      <Image source={{ uri: photo }} style={styles.imagePreview} />
-      <TextInput
-        style={styles.input}
-        placeholder="Caption"
-        value={caption}
-        onChangeText={setCaption}
-      />
-      <Rating
-        showRating
-        onFinishRating={(rating) => setRating(rating)}
-        style={styles.rating}
-        startingValue={rating}
-        imageSize={30}
-        minValue={1}
-        maxValue={5}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Event Title (optional)"
-        value={eventTitle}
-        onChangeText={setEventTitle}
-      />
-      <Button title="Post" onPress={handleSubmit} />
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  imagePreview: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-  },
-  rating: {
-    paddingVertical: 10,
-  },
-});
+    return (
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+      <View style={styles.container}>
+        <Image source={{ uri: photo }} style={styles.imagePreview} />
+  
+        {/* Event Title Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Event Title (optional)"
+          placeholderTextColor="white" // Adjust for better visibility
+          value={eventTitle}
+          onChangeText={setEventTitle}
+        />
+  
+        {/* Caption Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Caption"
+          placeholderTextColor="white" // Adjust for better visibility
+          value={caption}
+          onChangeText={setCaption}
+        />
+  
+        {/* Rating Component */}
+        <Rating
+          onFinishRating={(rating) => setRating(rating)}
+          style={styles.rating}
+          startingValue={rating}
+          imageSize={30}
+          minValue={1}
+          maxValue={5}
+          tintColor="#000"
+        />
+  
+        <Button title="Post" onPress={handleSubmit} />
+  
+        <View style={styles.buttonContainer}>
+          <Button title="Retake Photo" onPress={handleRetakePhoto} />
+          <Button title="Cancel" onPress={handleCancelPost} color="red" /> 
+        </View>
+      </View>
+      </KeyboardAvoidingView>
+    );
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: wp('5%'),
+      backgroundColor: '#000', // Set the background color to black
+    },
+    imagePreview: {
+      width: wp('90%'), // Set the width to 90% of the screen width
+      height: wp('90%') * 1.1, // Height is 110% of the width
+      marginBottom: hp('2%'),
+      resizeMode: 'contain', // Ensure the entire image is shown, may add letterboxing
+    },
+    input: {
+      width: wp('90%'),
+      padding: wp('2.5%'),
+      marginVertical: hp('1%'),
+      borderWidth: 1,
+      borderColor: 'gray',
+      borderRadius: 5,
+      color: 'white', // Set text color to white
+      backgroundColor: 'rgba(255, 255, 255, 0.1)', // Optional: Set input background color
+    },
+    rating: {
+      paddingVertical: hp('1%'),
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: wp('100%'),
+      marginTop: hp('2%'),
+    },
+  });
+  
 
 export default PostScreen;

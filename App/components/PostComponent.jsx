@@ -1,22 +1,33 @@
-// PostComponent.jsx
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 const PostComponent = ({ post }) => {
+  const renderStars = (rating) => {
+    let stars = '';
+    for (let i = 0; i < rating; i++) {
+      stars += '★';
+    }
+    return stars;
+  };
+
   return (
     <View style={styles.postItem}>
-      <View style={styles.topSection}>
-        <View style={styles.captionAndUsername}>
-          <Text style={styles.caption}>{post.caption}</Text>
-          <Text style={styles.username}>{post.username}</Text>
-        </View>
+      <View style={styles.titleAndUsername}>
+        <Text style={styles.username}>{post.username}</Text>
+        <Text style={styles.title}>{post.eventTitle}</Text>
       </View>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: post.photoURL }} style={styles.image} />
+        <Image 
+          source={{ uri: post.photoURL }} 
+          style={styles.image} 
+          resizeMode="cover"
+        />
       </View>
-      <View style={styles.titleAndRating}>
-        <Text style={styles.title}>{post.eventTitle}</Text>
-        <Text style={styles.rating}>{`Rating: ${post.rating}`}</Text>
+      <View style={styles.CaptionAndRating}>
+        <Text style={styles.caption}>{post.caption}</Text>
+        {/* Display stars based on rating */}
+        <Text style={styles.rating}>{renderStars(post.rating)}</Text>
       </View>
     </View>
   );
@@ -25,46 +36,48 @@ const PostComponent = ({ post }) => {
 const styles = StyleSheet.create({
   postItem: {
     backgroundColor: '#000',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    borderRadius: wp('4%'),
+    padding: wp('4%'),
+    marginBottom: wp('4%'),
   },
-  topSection: {
-    flexDirection: 'row', // Align children horizontally
-    justifyContent: 'space-between', // Space between location and caption/username
-  },
-  captionAndUsername: {
-    flexDirection: 'row', // Align caption and username horizontally
-    alignItems: 'center', // Align items vertically
-  },
-  imageContainer: {
-    // Style for image container if needed
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  titleAndRating: {
+  titleAndUsername: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: wp('4%'),
+  },
+  imageContainer: {
+    width: '100%',
+    height: wp('110%'),
+    borderRadius: wp('4%'),
+    overflow: 'hidden',
+    marginVertical: wp('4%'),
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  CaptionAndRating: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: wp('2%'),
   },
   username: {
     fontWeight: 'bold',
     color: '#fff',
-    marginLeft: 10, // Space between caption and username
+    fontSize: wp('4%'), // Adjust the font size as needed
   },
   title: {
     fontWeight: 'bold',
     color: '#fff',
+    fontSize: wp('5%'), // Adjust the font size as needed
   },
   caption: {
     color: '#fff',
   },
   rating: {
-    color: '#fff',
+    color: '#FFE500',
   },
 });
 
