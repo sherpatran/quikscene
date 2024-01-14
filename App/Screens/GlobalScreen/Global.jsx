@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import MapView from 'react-native-maps';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import MapView, {  Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 const mapJson = [
     {
@@ -62,7 +63,7 @@ const mapJson = [
       "elementType": "geometry.fill",
       "stylers": [
         {
-          "visibility": "off"
+          "visibility": "on"
         }
       ]
     },
@@ -75,6 +76,9 @@ const mapJson = [
         },
         {
           "saturation": 100
+        },
+        {
+          "visibility": "on"
         }
       ]
     },
@@ -249,46 +253,94 @@ const mapJson = [
     }
   ]
 
+const fetchPosts = async () => {
+    try {
+        const db = getFirestore();
+        const postsCollection = collection(db, 'posts');
+        const querySnapshot = await getDocs(postsCollection);
+
+        const posts = querySnapshot.docs.map(doc => {
+            const
+
+                postData = doc.data();
+            return {
+                id: doc.id,
+                eventTitle: postData.eventTitle,
+                rating: postData.rating,
+                location: {
+                    latitude: postData.location.latitude,
+                    longitude: postData.location.longitude,
+                }
+            };
+        });
+
+        return posts;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+};
+
+const points = [{ latitude: 34.41469145599752, longitude: -119.86536613232796}];
+const region = getRegionForCoordinates(points, 100);
+
 export default function GlobalPage() {
-  const points = [{ latitude: 34.41469145599752, longitude: -119.86536613232796}];
-  const region = getRegionForCoordinates(points, 100);
-  return (
-    <View style = {styles.container}>
-        <MapView 
-            style = {styles.map}
-            region={region}
-            customMapStyle={mapJson}
-        >
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        const loadPosts = async () => {
+            const fetchedPosts = await fetchPosts();
+            setPosts(fetchedPosts);
+        };
+
+        loadPosts();
+    }, []);
+
+    return (
+    <View style={styles.container}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={mapJson}
+          style={styles.map}
+          region={region}>
+          {posts.map(post => (
+            <Marker
+              key={post.id}
+              coordinate={{ latitude: post.location.latitude, longitude: post.location.longitude }}
+              title={post.eventTitle}
+              description={`Rating: ${post.rating}`}
+            />
+          ))}
         </MapView>
     </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     map: {
-      width:'100%',
-      height: '100%'
+        width: '100%',
+        height: '100%'
     },
     mapOverlay: {
-      position: "absolute",
-      bottom: 50,
-      backgroundColor: "#ffffff",
-      borderWidth: 2,
-      borderRadius: 5,
-      padding: 16,
-      left: "25%",
-      width: "50%",
-      textAlign: "center"
+        position: "absolute",
+        bottom: 50,
+        backgroundColor: "#ffffff",
+        borderWidth: 2,
+        borderRadius: 5,
+        padding: 16,
+        left: "25%",
+        width: "50%",
+        textAlign: "center"
     }
-  });
+});
 
-  export function getRegionForCoordinates(points, zoomFactor) {
+function getRegionForCoordinates(points, zoomFactor) {
     // points should be an array of { latitude: X, longitude: Y }
     let minX, maxX, minY, maxY;
   
@@ -325,3 +377,4 @@ const styles = StyleSheet.create({
       longitudeDelta: deltaY
     };
   }
+

@@ -72,7 +72,7 @@ const PostScreen = ({ route, navigation }) => {
               {
                 text: "OK",
                 onPress: () => navigation.navigate('Friends') // Navigate back to Friends screen
-              }
+              }   
             ]);
           }).catch(error => {
             console.error("Error adding document: ", error);

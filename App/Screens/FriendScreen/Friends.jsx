@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image } from 'react-native';
 import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
 import PostComponent from '../../components/PostComponent';
+
 
 const Friends = ({ navigation }) => {
     const [posts, setPosts] = useState([]);
@@ -40,9 +41,11 @@ const Friends = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         padding: 10,
+        backgroundColor: 'black',
     },
     postButton: {
         position: 'absolute',
