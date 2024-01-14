@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
-export default function Login({ navigation }) {
+export default function SignUp({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleLogin = () => {
+  const handleSignUp = () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
+        // Signed up
         const user = userCredential.user;
-        // Navigate to the main screen or do something else
-        navigation.navigate('MainNavigation'); // Replace 'Main' with your main screen route name
+        // Navigate to the login screen or directly to the main screen
+        navigation.navigate('Login'); // Or navigate to 'Main' or any other screen
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle errors here, such as displaying an alert
-        Alert.alert("Login Failed", errorMessage);
+        Alert.alert("Registration Failed", errorMessage);
       });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -41,10 +46,17 @@ export default function Login({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+      />
+      <Button title="Sign Up" onPress={handleSignUp} />
       <Button
-        title="Don't have an account? Sign Up"
-        onPress={() => navigation.navigate('SignUp')}
+        title="Already have an account? Login"
+        onPress={() => navigation.navigate('Login')}
         color="gray" // Optional: change color to distinguish from the main action
       />
     </View>
